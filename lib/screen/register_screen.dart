@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
-class Login_Screen extends StatefulWidget {
+class Register_Screen extends StatefulWidget {
   @override
-  Login_Screen_State createState() => Login_Screen_State();
+  Register_Screen_State createState() => Register_Screen_State();
 }
 
-class Login_Screen_State extends State<Login_Screen> {
+class Register_Screen_State extends State<Register_Screen> {
   TextEditingController _email_controller = TextEditingController();
   TextEditingController _password_controller = TextEditingController();
   //key for currentstate, it is used for the email & password input validator
@@ -136,8 +136,7 @@ class Login_Screen_State extends State<Login_Screen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => Navigator.of(context)
-                              .pushReplacementNamed("/RegisterScreen"),
+                          //onTap: () => Navigator.of(context).,
                           child: Text(
                             'No account yet? Sign Up',
                             style: TextStyle(
