@@ -10,11 +10,10 @@ class Splash_Screen_State extends State<Splash_Screen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(milliseconds: 2200), () {
       setState(() {
         Navigator.of(context).pushReplacementNamed("/LoginScreen");
         print('navigation');
-        //.pushReplacement("/LoginScreen", (route) => false);
       });
     });
   }
@@ -28,26 +27,72 @@ class Splash_Screen_State extends State<Splash_Screen> {
       body: Container(
         height: _screen_height,
         width: _screen_width,
-        color: Colors.blue,
+        color: Colors.white,
         child: Column(
           children: [
-            SizedBox(height: (_screen_height / 2) - 30),
-            Text(
-              'Hello World',
-              style: TextStyle(fontSize: 50),
+            SizedBox(
+              height: _screen_height / 4,
+            ),
+            Image.asset(
+              'assets/images/logo.png',
+              height: 250,
+              width: 250,
             ),
             SizedBox(height: 50),
             CollectionSlideTransition(
               repeat: false,
               children: <Widget>[
-                Icon(Icons.android),
-                Icon(Icons.apps),
-                Icon(Icons.announcement),
-                Icon(Icons.announcement),
-                Icon(Icons.announcement),
-                Icon(Icons.announcement),
+                Image.asset(
+                  'assets/images/kitty.png',
+                  height: 40,
+                  width: 40,
+                ),
+                Image.asset(
+                  'assets/images/love3.png',
+                  height: 30,
+                  width: 30,
+                ),
+                Image.asset(
+                  'assets/images/kitty.png',
+                  height: 40,
+                  width: 40,
+                ),
+                Image.asset(
+                  'assets/images/love3.png',
+                  height: 30,
+                  width: 30,
+                ),
+                Image.asset(
+                  'assets/images/kitty.png',
+                  height: 40,
+                  width: 40,
+                ),
+                Image.asset(
+                  'assets/images/love3.png',
+                  height: 30,
+                  width: 30,
+                ),
+                Image.asset(
+                  'assets/images/kitty.png',
+                  height: 40,
+                  width: 40,
+                ),
               ],
             ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 10.0),
+            //   child: Container(
+            //     height: 5.0,
+            //     width: 250.0,
+            //     color: Colors.amberAccent,
+            //   ),
+            // ),
+            SizedBox(height: 20),
+            // Container(
+            //   color: Colors.amberAccent,
+            //   height: 210,
+            //   width: 500,
+            // )
           ],
         ),
       ),
