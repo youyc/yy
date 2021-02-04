@@ -77,6 +77,7 @@ class Home_Screen_State extends State<Home_Screen> {
                     crossAxisSpacing: 15,
                     childAspectRatio: 0.6,
                   ),
+                  itemCount: _cat_list_size,
                   itemBuilder: (context, index) => InkWell(
                     onTap: () {
                       int _nav_index = 0;
@@ -170,7 +171,6 @@ class Home_Screen_State extends State<Home_Screen> {
                       ),
                     ),
                   ),
-                  itemCount: _cat_list_size,
                 ),
               ),
         bottomNavigationBar: Row(

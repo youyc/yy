@@ -13,10 +13,14 @@ class Cat_Detail_Screen extends StatefulWidget {
 }
 
 class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
+  TextEditingController _comment_controller = TextEditingController();
   int index;
   _Cat_Detail_Screen_State(this.index);
   Global_State _global_key = Global_State.instance;
   List list;
+
+  List _comment_list;
+  int _comment_list_size;
 
   @override
   void initState() {
@@ -31,6 +35,9 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
     } else if (index == 3) {
       list = _global_key.adopted_cat_list;
     }
+    setState(() {
+      _load_comment();
+    });
   }
 
   @override
@@ -72,13 +79,10 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
                 ),
                 //lowerpart
                 Container(
-                  //height: _screen_height - (_screen_height / 3.6),
+                  // height: _screen_height - (_screen_height / 3.6),
                   color: Colors.amberAccent,
                   child: Column(
                     children: [
-                      SizedBox(
-                        height: 20,
-                      ),
                       Container(
                         //height: 90,
                         padding: EdgeInsets.fromLTRB(30, 10, 30, 0),
@@ -96,8 +100,6 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
                         ),
                       ),
                       Container(
-                        //height: 90,
-                        // color: Colors.green,
                         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
                         child: Row(
                           children: [
@@ -111,8 +113,6 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
                         ),
                       ),
                       Container(
-                        //height: 90,
-                        // color: Colors.green,
                         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
                         child: Row(
                           children: [
@@ -125,7 +125,6 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
                         ),
                       ),
                       Container(
-                        //height: 35,
                         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
                         child: Row(
                           children: [
@@ -138,8 +137,7 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
                         ),
                       ),
                       Container(
-                        //height: 200,
-                        padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                        padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
                         child: Row(
                           children: [
                             Container(
@@ -151,45 +149,90 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 15,
+                    ],
+                  ),
+                ),
+                //forum part
+                Text("forum"),
+                Card(
+                  child: _comments(),
+                ),
+
+                //comment part
+                Container(
+                  child: TextField(
+                    controller: _comment_controller,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 1,
+                    maxLines: 20,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      icon: Icon(
+                        Icons.chat,
+                        color: Colors.blue,
                       ),
-                      Container(
-                        height: 70,
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.fromLTRB(10, 0, 35, 25),
-                        child: Container(
-                          child: SizedBox(
-                            height: 100,
-                            width: 130,
-                            child: index != 0
-                                ? Container()
-                                : RaisedButton(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    onPressed: () {
-                                      _adopt_cat();
-                                    },
-                                    child: Text(
-                                      "Adopt",
-                                      style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    color: Colors.deepOrange[400],
-                                  ),
-                          ),
+                      hintText: "Write a comment...",
+                      suffixIcon: GestureDetector(
+                        onTap: _comment_controller.text.isEmpty == true
+                            ? null
+                            : _upload_comment,
+                        child: Icon(
+                          Icons.send,
+                          color: Colors.blue,
                         ),
                       ),
-                    ],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          width: _screen_width,
+          padding: EdgeInsets.fromLTRB(30, 5, 30, 0),
+          child: index != 0
+              ? Container()
+              : RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  onPressed: () {
+                    setState(() {
+                      _load_comment();
+                    });
+
+                    //_adopt_cat();
+                  },
+                  child: Text(
+                    "Adopt",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  color: Colors.deepOrange[400],
+                ),
         ),
       ),
     );
@@ -228,5 +271,155 @@ class _Cat_Detail_Screen_State extends State<Cat_Detail_Screen> {
       print(err);
     });
     await pr.hide();
+  }
+
+  //stop at here
+  void _load_comment() async {
+    String _catid = list[_global_key.selected_index]["catid"];
+    http.post(
+      'http://icebeary.com/hope4cat/load_comment.php',
+      body: {
+        "catid": _catid,
+      },
+    ).then((res) {
+      if (res.body == 'nodata') {
+        print('no data');
+      } else {
+        var cats_jscode = json.decode(res.body);
+        _comment_list = cats_jscode['comments'];
+        _comment_list_size = _comment_list.length;
+        print(_comment_list_size);
+      }
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
+  _upload_comment() async {
+    String _catid = list[_global_key.selected_index]["catid"];
+    String _name = _global_key.user_list[0]["name"];
+    String _comment = _comment_controller.text;
+    ProgressDialog pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false);
+    pr.style(message: "Uploading Comment...");
+    await pr.show();
+    http.post("https://icebeary.com/hope4cat/upload_comment.php", body: {
+      "catid": _catid,
+      "name": _name,
+      "comment": _comment,
+    }).then((res) {
+      print(res.body);
+      if (res.body == "failed") {
+        Toast.show(
+          "Upload comment failed",
+          context,
+          duration: 4,
+          gravity: Toast.BOTTOM,
+        );
+      } else {
+        Toast.show(
+          "Upload comment success",
+          context,
+          duration: 4,
+          gravity: Toast.BOTTOM,
+        );
+        _comment_controller.clear();
+      }
+    }).catchError((err) {
+      print(err);
+    });
+    await pr.hide();
+  }
+
+  //previous comments part
+  Widget _comments() {
+    return _comment_list_size == null
+        ? Container(
+            height: 0,
+          )
+        : Container(
+            height: 265,
+            child: ListView.builder(
+              //need change
+              itemCount: _comment_list_size,
+              itemBuilder: (context, index) => Container(
+                color: Colors.green,
+                child: ListTile(
+                  title: Text("${_comment_list[index]["name"]}"),
+                  subtitle: Text("${_comment_list[index]["comment"]}"),
+                ),
+              ),
+            ),
+          );
+  }
+
+  Widget _forum() {
+    return Container(
+      margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Column(
+        children: [
+          // //previous comments part
+          // _comment_list_size == null
+          //     ? Container()
+          //     : Container(
+          //         height: 200,
+          //         padding: EdgeInsets.all(10),
+          //         child: ListView.builder(
+          //           //need change
+          //           itemCount: _comment_list_size,
+          //           itemBuilder: (context, index) => Container(
+          //             color: Colors.green,
+          //             child: ListTile(
+          //               title: Text("${_comment_list[index]["name"]}"),
+          //               subtitle: Text("${_comment_list[index]["comment"]}"),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //add new comment part
+          Container(
+            //color: Colors.green,
+            child: TextField(
+              controller: _comment_controller,
+              keyboardType: TextInputType.multiline,
+              minLines: 1,
+              maxLines: 20,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey[200],
+                icon: Icon(
+                  Icons.chat,
+                  color: Colors.blue,
+                ),
+                hintText: "Write a comment...",
+                suffixIcon: GestureDetector(
+                  onTap: _comment_controller.text.isEmpty == true
+                      ? null
+                      : _upload_comment,
+                  child: Icon(
+                    Icons.send,
+                    color: Colors.blue,
+                  ),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    width: 1,
+                    color: Colors.blue,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    width: 1,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
